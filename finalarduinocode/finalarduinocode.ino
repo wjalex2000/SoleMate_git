@@ -1,10 +1,9 @@
-
 #include <LiquidCrystal.h>
 
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-int input = A0;
+//int input = A0;
 
 //int counter= 30;
 int kill = 13;
@@ -21,9 +20,9 @@ int buttonstate2 = 0;
 int kstate =0;
 int x=0;
 int y=0;
+int time;
 double c=0;
 
-void(* resetFunc) (void) = 0;
 void setup() {
   Serial.begin(9600);
 
@@ -34,7 +33,7 @@ void setup() {
   
 
   lcd.begin(16, 2); // number of options = # rows
-  
+  Serial.print("sibal");
  lcd.print("----SoleMate----");
    delay(3000);
   
@@ -46,6 +45,7 @@ void setup() {
 }
 
 
+//void(* resetFunc) (void) = 0;
 
 void loop() {
 kstate = digitalRead(killsw);
@@ -95,37 +95,48 @@ buttonstate2 = digitalRead(ok);
         if(screenNumber == 0){
         lcd.setCursor(0,0);
         lcd.print("cleaning a Phone");
-        
+        //control();
         x=1;  
-        y=1;         
+        y=1;    
+        time = 10;  
       } else if(screenNumber ==1){
         lcd.setCursor(0,0);
         lcd.print("cleaning keys   ");
+        x=1;  
+        y=1;       
+        time = 20;  
       } else if (screenNumber ==2 ){
         lcd.setCursor(0,0);
         lcd.print("cleaning wallet");
+        x=1;  
+        y=1;       
+        time = 30;
       } else if (screenNumber == 3){
         lcd.setCursor(0,0);
         lcd.print("cleaning shoes ");
+        x=1;  
+        y=1;       
+        time = 40;
       }
      }
      
      if(x==1){
+      Serial.print("motor1 workibg");
       analogWrite(motor1,255);
       delay(500);
       c += 0.5;
-      analogWrite(motor1,0);
-      
+      analogWrite(motor1,0);     
       }
       if(y==1){ 
-      x=kstate;
+      //x=kstate;
+      x=1;
       }
-      //Serial.print(c);
-      delay(1000);
-      double temper = tempCK();
-      delay(1000);
-      if(c==1000){
-        resetFunc();
+      Serial.print(c);
+      if(c==time){
+       // resetFunc();
+       x=0;
+       lcd.setCursor(0,0);
+       lcd.print("complete!          ");
       }
       
 }
@@ -133,7 +144,7 @@ buttonstate2 = digitalRead(ok);
 void control(){
   kstate = digitalRead(killsw);
           while(kstate==0){
-           //Serial.print(kstate);
+           Serial.print(kstate);
            analogWrite(motor1, 255);
            if(kstate==0){
            delay(10000);
@@ -150,12 +161,11 @@ void control(){
 
  }
  
+/*
 double tempCK() {
-
   int raw = analogRead(input);
   float voltage = raw * 5.0;
   voltage /= 1024.0;
-  Serial.print(raw);
   Serial.print(voltage);
   Serial.print("Volts \n");
   float tempC = (voltage - 0.5) * 100;
@@ -165,15 +175,9 @@ double tempCK() {
   Serial.print(temF); 
   Serial.print("Degrees Farenheit \n");
   
-  return tempC;
-
+  return tempC
 }
-/*
-
 int motorPin = 9;
-
-
-
  
 void setup() 
 { 
